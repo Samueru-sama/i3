@@ -1515,8 +1515,11 @@ static void send_tray_clientmessage(void) {
 static void init_tray(void) {
     DLOG("Initializing system tray functionality\n");
     /* request the tray manager atom for the X11 display we are running on */
-    char atomname[strlen("_NET_SYSTEM_TRAY_S") + 11];
-    snprintf(atomname, strlen("_NET_SYSTEM_TRAY_S") + 11, "_NET_SYSTEM_TRAY_S%d", screen);
+    /* The following line cannot use strlen as that makes compilation fail with
+     * some versions of clang (-Wgnu-folding-constant): */
+    const size_t systray_len = strlen("_NET_SYSTEM_TRAY_S") + 11;
+    char atomname[systray_len];
+    snprintf(atomname, systray_len, "_NET_SYSTEM_TRAY_S%d", screen);
     xcb_intern_atom_cookie_t tray_cookie;
     if (tray_reply == NULL) {
         tray_cookie = xcb_intern_atom(xcb_connection, 0, strlen(atomname), atomname);
